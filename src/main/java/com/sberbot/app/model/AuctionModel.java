@@ -1,13 +1,13 @@
-package com.dismas.testSelenide;
+package com.sberbot.app.model;
 
 import java.util.Objects;
 
 public class AuctionModel {
-    String auctionNumber;
-    String orgName;
-    String tenderName;
-    String publicDate;
-    String sum;
+    private String auctionNumber;
+    private String orgName;
+    private String tenderName;
+    private String publicDate;
+    private String sum;
 
     public AuctionModel() {
     }

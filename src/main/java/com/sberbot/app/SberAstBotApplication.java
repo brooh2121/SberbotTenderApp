@@ -1,6 +1,6 @@
-package com.dismas.testSelenide;
+package com.sberbot.app;
 
-import com.dismas.testSelenide.service.BotService;
+import com.sberbot.app.service.BotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SberAstBotApplication implements CommandLineRunner {
 
 	@Autowired
-	BotService botService;
+    BotService botService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SberAstBotApplication.class, args);

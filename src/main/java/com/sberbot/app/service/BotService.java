@@ -1,11 +1,9 @@
-package com.dismas.testSelenide.service;
+package com.sberbot.app.service;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.SelenideElement;
-import com.dismas.testSelenide.AuctionModel;
-import com.google.gson.internal.$Gson$Preconditions;
-import org.openqa.selenium.By;
+import com.sberbot.app.dao.BotAppDao;
+import com.sberbot.app.model.AuctionModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,6 +15,9 @@ import static com.codeborne.selenide.Selenide.*;
 
 @Service
 public class BotService {
+
+    @Autowired
+    BotAppDao botAppDao;
 
     public void getAuction () {
         //Configuration.timeout=6000;
@@ -33,14 +34,9 @@ public class BotService {
         SelenideElement selenideElement = element(byXpath("//*[@id='resultTable']"));
 
         List<AuctionModel> auctionModels = new ArrayList<>();
+        List<AuctionModel> auctionModelsFromDao = botAppDao.getAllAutions();
 
         List<String> auctionCodes = selenideElement.findAll(byClassName("es-el-code-term")).texts();
-        /*
-        for(int i = 0; i < auctionCodes.size(); i++) {
-            //auctionCodes.add(new AuctionModel(auctionCodes.get(i),"","",""));
-            auctionModels.add(new AuctionModel(auctionCodes.get(i),"null","null","null","null"));
-        }
-        */
 
         for(String auctionCode : auctionCodes) {
             auctionModels.add(new AuctionModel(auctionCode,"null","null","null","null"));
@@ -70,8 +66,14 @@ public class BotService {
            auctionModels.get(i).setSum(tenrersSums.get(i));
        }
 
-        for(AuctionModel auctionModelFromList : auctionModels) {
-            System.out.println(auctionModelFromList.getAuctionNumber() + " " + auctionModelFromList.getPublicDate() + " " + auctionModelFromList.getOrgName() + " " + auctionModelFromList.getTenderName() + " " + auctionModelFromList.getSum());
-        }
+       for (AuctionModel auctionModel : auctionModels) {
+           if(!auctionModelsFromDao.contains(auctionModel)) {
+               botAppDao.addAuction(auctionModel);
+           }else {
+               System.out.println("Аукцион с номером " + auctionModel.getAuctionNumber() + " уже есть в базе данных");
+           }
+
+       }
+
     }
 }
