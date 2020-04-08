@@ -9,10 +9,11 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.dismas</groupId>
-	<artifactId>testSelenide</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>testSelenide</name>
+	<artifactId>SberBotApp</artifactId>
+	<version>0.0.1</version>
+	<name>SberBotApp</name>
 	<description>Demo project for Spring Boot</description>
+	<packaging>jar</packaging>
 
 	<properties>
 		<java.version>1.8</java.version>

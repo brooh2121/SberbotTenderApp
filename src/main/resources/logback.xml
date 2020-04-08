@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
     <appender name="test" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>D:\allJavaTries\logs\testLog.log</File>
+        <File>C:\App\logs\SberBotLog.log</File>
         <encoder>
             <pattern>%d{MMdd@HH:mm:ss} %-5p [%t] |%file:%line| - %msg%n</pattern>
             <charset>utf-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>D:\allJavaTries\logs\testLog._%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>C:\App\logs\SberBotLog._%d{yyyy-MM-dd}.log.zip</fileNamePattern>
         </rollingPolicy>
     </appender>
-
+<!--
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <target>System.out</target>
         <encoder>
             <pattern>%d{MMdd@HH:mm:ss} %-5p [%t] |%file:%line| - %msg%n</pattern>
         </encoder>
     </appender>
-
-    <root level="debug">
+-->
+    <root level="info">
         <appender-ref ref="test"/>
+        <!--
         <appender-ref ref="console"/>
+        -->
     </root>
 </Configuration>
