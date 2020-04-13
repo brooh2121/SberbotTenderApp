@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codeborne.selenide.Selenide.open;
+
 public class SuperTest {
 
     @Test
@@ -29,5 +31,13 @@ public class SuperTest {
         for(AuctionModel auctionModelFromList : auctionModels) {
             System.out.println(auctionModelFromList.getTenderName().contains("ОСАГО"));
         }
+    }
+
+    @Test
+    void testoftest() {
+        System.setProperty("webdriver.chrome.driver", "C:\\App\\chromedriver.exe");
+        System.setProperty("selenide.browser", "Chrome");
+        open("http://google.com");
+
     }
 }

@@ -1,6 +1,7 @@
 package com.sberbot.app.service;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.SelenideElement;
 import com.sberbot.app.dao.BotAppDao;
 import com.sberbot.app.model.AuctionModel;
@@ -10,6 +11,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
@@ -29,9 +31,14 @@ public class BotService {
     @Autowired
     BotAppDao botAppDao;
 
+    @Autowired
+    Environment environment;
+
     public void getAuction () {
         try {
-
+            //"C:/App/chromedriver.exe"
+            System.setProperty("webdriver.chrome.driver", environment.getProperty("webdriver.path"));
+            System.setProperty("selenide.browser", "Chrome");
             logger.info("Переходим на сайт сбербанк-аст");
             open("https://www.sberbank-ast.ru/purchaseList.aspx");
             element(byId("searchInput")).setValue("осаго").pressEnter();
