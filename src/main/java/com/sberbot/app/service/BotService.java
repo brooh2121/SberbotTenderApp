@@ -38,7 +38,7 @@ public class BotService {
             //element(byClassName("es-el-source-term")).shouldHave(text("Госзакупки по 44-ФЗ")).click();
             //element(byId("footerPagerSelect")).selectOptionContainingText("20");
 
-            SelenideElement selenideElement = element(byXpath("//*[@id='resultTable']")).shouldBe(Condition.visible);
+            SelenideElement selenideElement = element(byXpath("//*[@id='resultTable']")).waitUntil(Condition.visible,6000);
 
             List<AuctionModel> auctionModels = new ArrayList<>();
             List<AuctionModel> auctionModelsFromDao = botAppDao.getAllAutions();
@@ -54,8 +54,8 @@ public class BotService {
 
             for (AuctionModel auctionModel : uniqueAuctionModels) {
                 if(!uniqueAuctionModelsFromDao.contains(auctionModel)) {
-                    if(auctionModel.getTenderName().contains("ОСАГО")) {
-                        logger.info("Загружаем в базу данных новый аукцион");
+                    if(auctionModel.getTenderName().toUpperCase().contains("ОСАГО")) {
+                        logger.info("Загружаем в базу данных новый аукцион " + auctionModel.getAuctionNumber());
                         botAppDao.addAuction(auctionModel);
                     }else {
                         logger.info("Попался АУКЦИОН не по ОСАГО с номером " + auctionModel.getAuctionNumber() + ", в БД не записываем");
@@ -79,6 +79,7 @@ public class BotService {
     private List<AuctionModel> getListOfCodes(SelenideElement selenideElement, List<AuctionModel> auctionModels) {
         List<String> auctionCodes = selenideElement.findAll(byClassName("es-el-code-term")).texts();
         for(String auctionCode : auctionCodes) {
+            logger.info("Дополняем коллекцию новым аукционом с номером " + auctionCode + " но остальные параметры пока null");
             auctionModels.add(new AuctionModel(auctionCode,"null","null","null","null"));
         }
         return auctionModels;
@@ -86,6 +87,7 @@ public class BotService {
 
     private List<AuctionModel> getListOfPublicDates(SelenideElement selenideElement, List<AuctionModel> auctionModels) {
         List<String> publicDates = selenideElement.findAll(byCssSelector("span[content='leaf:PublicDate']")).texts();
+        logger.info("По порядку с первого элемента коллекции заполняем дату публикации");
         for(int i=0; i < publicDates.size(); i ++) {
             auctionModels.get(i).setPublicDate(publicDates.get(i));
         }
@@ -94,6 +96,7 @@ public class BotService {
 
     private List<AuctionModel> getListOfOrgNames(SelenideElement selenideElement,List<AuctionModel> auctionModels) {
         List<String> orgNames = selenideElement.findAll(byClassName("es-el-org-name")).texts();
+        logger.info("По порядку с первого элемента коллекции заполняем наименования организаций");
         for(int i=0; i < orgNames.size();i++) {
             auctionModels.get(i).setOrgName(orgNames.get(i));
         }
@@ -103,6 +106,7 @@ public class BotService {
 
     private List<AuctionModel> getListOfTenderNames(SelenideElement selenideElement,List<AuctionModel> auctionModels) {
         List<String> tenderNames = selenideElement.findAll(byClassName("es-el-name")).texts();
+        logger.info("По порядку с первого элемента коллекции заполняем наименования тендеров");
         for(int i=0; i < tenderNames.size();i++) {
             auctionModels.get(i).setTenderName(tenderNames.get(i));
         }
@@ -111,6 +115,7 @@ public class BotService {
 
     private List<AuctionModel> getListOfTenderSums(SelenideElement selenideElement,List<AuctionModel> auctionModels) {
         List<String> tenrersSums = selenideElement.findAll(byClassName("es-el-amount")).texts();
+        logger.info("По порядку с первого элемента коллекции заполняем суммы тендеров");
         for (int i=0;i < tenrersSums.size(); i++) {
             auctionModels.get(i).setSum(tenrersSums.get(i));
         }

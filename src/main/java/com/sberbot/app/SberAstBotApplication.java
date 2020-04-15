@@ -28,7 +28,9 @@ public class SberAstBotApplication implements CommandLineRunner {
 		for(;;) {
 			try {
 				logger.info("Запускаем бота в" + " " + LocalDateTime.now());
+				System.out.println("Бот запущен в " + LocalDateTime.now());
 				botService.getAuction();
+				System.out.println("Бот остановлен в " + LocalDateTime.now());
 				Thread.sleep(60*1000);
 			}catch (Exception e) {
 				e.printStackTrace();

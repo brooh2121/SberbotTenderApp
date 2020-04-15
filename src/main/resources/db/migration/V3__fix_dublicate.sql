@@ -1,0 +1,1 @@
+delete from public.auctions where auction_number = '0356200014320000010';

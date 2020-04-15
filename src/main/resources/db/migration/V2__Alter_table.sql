@@ -1,0 +1,1 @@
+alter table public.auctions add column sysdate timestamp default current_timestamp;
