@@ -11,4 +11,6 @@ public interface BotAppDao {
 
     List<AuctionModel> getAllAutions();
 
+    String getMaxPublicDate();
+
 }

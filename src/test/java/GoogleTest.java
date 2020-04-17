@@ -28,7 +28,8 @@ public class GoogleTest {
         open("https://www.sberbank-ast.ru/purchaseList.aspx");
         element(byId("searchInput")).setValue("Электронный аукцион осаго").pressEnter();
 
-        SelenideElement selenideElement = element(byXpath("//*[@id='resultTable']"));
+        //SelenideElement selenideElement = element(byXpath("//*[@id='resultTable']"));
+        SelenideElement selenideElement = element(byId("resultTable"));
         selenideElement.shouldBe(Condition.visible);
         List<String> publicDates = selenideElement.findAll(byCssSelector("span[content='leaf:PublicDate']")).texts();
 

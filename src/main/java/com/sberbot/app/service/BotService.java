@@ -7,12 +7,16 @@ import com.sberbot.app.model.AuctionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.springframework.util.StringUtils;
+
+import javax.swing.text.DateFormatter;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
@@ -28,18 +32,47 @@ public class BotService {
     @Autowired
     Environment environment;
 
-    public void getAuction () {
+    public void enterSberAuction () {
+        System.setProperty("webdriver.chrome.driver", environment.getProperty("webdriver.path"));
+        System.setProperty("selenide.browser", "Chrome");
+        logger.info("Переходим на сайт сбербанк-аст");
+        open("https://www.sberbank-ast.ru/purchaseList.aspx");
+        executeJavaScript("select = document.getElementById('headerPagerSelect');\n" +
+                "var opt = document.createElement('option');\n" +
+                "opt.value = 5;\n" +
+                "opt.innerHTML = 5;\n" +
+                "select.appendChild(opt);");
+        element(byId("headerPagerSelect")).selectOptionByValue("5");
+    }
+
+    public SelenideElement seachOption() {
+        element(byId("searchInput")).setValue("осаго").pressEnter();
+        //element(byClassName("es-el-source-term")).shouldHave(text("Госзакупки по 44-ФЗ")).click();
+        SelenideElement selenideElement = element(byId("resultTable"));
+        selenideElement.shouldBe(Condition.visible);
+        SelenideElement elem = selenideElement.find(byClassName("es-el-name"));
+        elem.shouldHave(Condition.text("ОСАГО")).text().toUpperCase();
+        return selenideElement;
+    }
+
+    public Boolean checkMaxAuctionPublicDate(SelenideElement selenideElement) throws Exception {
+        String maxStringPublicDate = selenideElement.find(byCssSelector("span[content='leaf:PublicDate']")).text();
+        String dateFromDao = botAppDao.getMaxPublicDate();
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssX");
+        LocalDateTime ldt;
+        LocalDateTime ldt1;
+        if(StringUtils.hasText(dateFromDao)) {
+            ldt = LocalDateTime.parse(maxStringPublicDate,df);
+            ldt1 = LocalDateTime.parse(dateFromDao,df1);
+            return ldt.equals(ldt1);
+        } else return false;
+        //String resultString = "Дата со страницы " + ldt + " и максимальная дата из БД " + ldt1 + " " + ldt.equals(ldt1);
+        //return ldt.equals(ldt1);
+    }
+
+    public void getAuction (SelenideElement selenideElement) {
         try {
-            System.setProperty("webdriver.chrome.driver", environment.getProperty("webdriver.path"));
-            System.setProperty("selenide.browser", "Chrome");
-            logger.info("Переходим на сайт сбербанк-аст");
-            open("https://www.sberbank-ast.ru/purchaseList.aspx");
-            element(byId("searchInput")).setValue("осаго").pressEnter();
-            //element(byClassName("es-el-source-term")).shouldHave(text("Госзакупки по 44-ФЗ")).click();
-            //element(byId("footerPagerSelect")).selectOptionContainingText("20");
-
-            SelenideElement selenideElement = element(byXpath("//*[@id='resultTable']")).waitUntil(Condition.visible,6000);
-
             List<AuctionModel> auctionModels = new ArrayList<>();
             List<AuctionModel> auctionModelsFromDao = botAppDao.getAllAutions();
 
@@ -55,8 +88,14 @@ public class BotService {
             for (AuctionModel auctionModel : uniqueAuctionModels) {
                 if(!uniqueAuctionModelsFromDao.contains(auctionModel)) {
                     if(auctionModel.getTenderName().toUpperCase().contains("ОСАГО")) {
-                        logger.info("Загружаем в базу данных новый аукцион " + auctionModel.getAuctionNumber());
-                        botAppDao.addAuction(auctionModel);
+                        if(!auctionModel.getAuctionNumber().contains("element is not attached to the page document")
+                        &!auctionModel.getTenderName().contains("element is not attached to the page document")
+                        &!auctionModel.getOrgName().contains("element is not attached to the page document")
+                        &!auctionModel.getPublicDate().contains("element is not attached to the page document")
+                        &!auctionModel.getSum().contains("element is not attached to the page document")) {
+                            logger.info("Загружаем в базу данных новый аукцион " + auctionModel.getAuctionNumber());
+                            botAppDao.addAuction(auctionModel);
+                        }
                     }else {
                         logger.info("Попался АУКЦИОН не по ОСАГО с номером " + auctionModel.getAuctionNumber() + ", в БД не записываем");
                     }
@@ -70,10 +109,10 @@ public class BotService {
         }catch (Exception e) {
             e.printStackTrace();
             logger.error(e.toString());
-        }finally {
+        }/*finally {
             closeWebDriver();
             logger.info("Закрыли окно браузера");
-        }
+        }*/
     }
 
     private List<AuctionModel> getListOfCodes(SelenideElement selenideElement, List<AuctionModel> auctionModels) {
@@ -90,6 +129,7 @@ public class BotService {
         logger.info("По порядку с первого элемента коллекции заполняем дату публикации");
         for(int i=0; i < publicDates.size(); i ++) {
             auctionModels.get(i).setPublicDate(publicDates.get(i));
+            //logger.info(publicDates.get(i));
         }
         return auctionModels;
     }
@@ -99,6 +139,7 @@ public class BotService {
         logger.info("По порядку с первого элемента коллекции заполняем наименования организаций");
         for(int i=0; i < orgNames.size();i++) {
             auctionModels.get(i).setOrgName(orgNames.get(i));
+            //logger.info(orgNames.get(i));
         }
 
         return auctionModels;
@@ -109,6 +150,7 @@ public class BotService {
         logger.info("По порядку с первого элемента коллекции заполняем наименования тендеров");
         for(int i=0; i < tenderNames.size();i++) {
             auctionModels.get(i).setTenderName(tenderNames.get(i));
+            //logger.info(tenderNames.get(i));
         }
         return auctionModels;
     }
@@ -118,6 +160,7 @@ public class BotService {
         logger.info("По порядку с первого элемента коллекции заполняем суммы тендеров");
         for (int i=0;i < tenrersSums.size(); i++) {
             auctionModels.get(i).setSum(tenrersSums.get(i));
+            //logger.info(tenrersSums.get(i));
         }
         return auctionModels;
     }

@@ -32,7 +32,15 @@ public class BotAppDaoImpl implements BotAppDao {
 
     @Override
     public List<AuctionModel> getAllAutions() {
-        String query = "select * from public.auctions a order by to_timestamp(publication_date,'dd.mm.yyyy hh24:mi:ss') desc";
+        String query = "select * from public.auctions a order by to_timestamp(publication_date,'dd.mm.yyyy hh24:mi:ss') desc limit 20";
         return jdbcTemplate.query(query,new AuctionsMapper());
     }
+
+    @Override
+    public String getMaxPublicDate() {
+        String query = "select max(to_timestamp(publication_date,'DD.MM.YYYY HH24:MI')) from auctions";
+        String strResult = jdbcTemplate.queryForObject(query,String.class);
+        return strResult;
+    }
+
 }

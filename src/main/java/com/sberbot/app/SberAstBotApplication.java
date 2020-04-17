@@ -1,5 +1,6 @@
 package com.sberbot.app;
 
+import com.codeborne.selenide.SelenideElement;
 import com.sberbot.app.service.BotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +26,20 @@ public class SberAstBotApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
+		botService.enterSberAuction();
 		for(;;) {
 			try {
 				logger.info("Запускаем бота в" + " " + LocalDateTime.now());
 				System.out.println("Бот запущен в " + LocalDateTime.now());
-				botService.getAuction();
+				SelenideElement selenideElement = botService.seachOption();
+				logger.info("Проверяем есть ли новые аукционы, если да - забираем");
+				if(botService.checkMaxAuctionPublicDate(selenideElement)) {
+					logger.info("Новых аукционов пока что нет - готовимся к спячке");
+				}else {
+					botService.getAuction(selenideElement);
+				}
 				System.out.println("Бот остановлен в " + LocalDateTime.now());
-				Thread.sleep(60*1000);
+				Thread.sleep(1000);
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
