@@ -3,6 +3,7 @@ package com.sberbot.app.service;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import com.sberbot.app.dao.BotAppDao;
+import com.sberbot.app.dao.BotAppOracleDao;
 import com.sberbot.app.model.AuctionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,9 @@ public class BotService {
 
     @Autowired
     BotAppDao botAppDao;
+
+    @Autowired
+    BotAppOracleDao botAppOracleDao;
 
     @Autowired
     Environment environment;
@@ -113,6 +117,10 @@ public class BotService {
             closeWebDriver();
             logger.info("Закрыли окно браузера");
         }*/
+    }
+
+    public String getHelthCheckOracle() {
+        return botAppOracleDao.getHelthCheck();
     }
 
     private List<AuctionModel> getListOfCodes(SelenideElement selenideElement, List<AuctionModel> auctionModels) {

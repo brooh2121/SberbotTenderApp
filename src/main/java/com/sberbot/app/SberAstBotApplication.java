@@ -1,6 +1,7 @@
 package com.sberbot.app;
 
 import com.codeborne.selenide.SelenideElement;
+import com.sberbot.app.config.OracleDataSourceConfig;
 import com.sberbot.app.service.BotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,10 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
 import java.time.LocalDateTime;
 
-@SpringBootApplication
+//@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,value = {OracleDataSourceConfig.class})})
+@SpringBootApplication//(exclude ={FlywayAutoConfiguration.class})//(exclude = {OracleDataSourceConfig.class})
 public class SberAstBotApplication implements CommandLineRunner {
 
 	private static final Logger logger = LoggerFactory.getLogger(SberAstBotApplication.class.getSimpleName());
@@ -30,6 +35,7 @@ public class SberAstBotApplication implements CommandLineRunner {
 		for(;;) {
 			try {
 				logger.info("Запускаем бота в" + " " + LocalDateTime.now());
+				System.out.println(botService.getHelthCheckOracle());
 				System.out.println("Бот запущен в " + LocalDateTime.now());
 				SelenideElement selenideElement = botService.seachOption();
 				logger.info("Проверяем есть ли новые аукционы, если да - забираем");

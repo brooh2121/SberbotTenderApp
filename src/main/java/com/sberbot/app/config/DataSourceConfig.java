@@ -2,11 +2,14 @@ package com.sberbot.app.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig {
@@ -32,4 +35,5 @@ public class DataSourceConfig {
 
     @Bean(name = "jdbcTemplatePostgreTend")
     public JdbcTemplate getJdbcTemplatePostgreTend(){return new JdbcTemplate(getDataSourceForPostgre());}
+    
 }
