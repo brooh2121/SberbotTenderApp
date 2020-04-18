@@ -85,6 +85,22 @@ public class BotService {
             getListOfOrgNames(selenideElement,auctionModels);
             getListOfTenderNames(selenideElement,auctionModels);
             getListOfTenderSums(selenideElement,auctionModels);
+            getListOfTenderTypes(selenideElement,auctionModels);
+            getListOfTenderBegDates(selenideElement,auctionModels);
+            getListOfTenderEndDates(selenideElement,auctionModels);
+
+            /*
+            for(AuctionModel auctionModel : auctionModels) {
+                logger.info("Теперь у нас есть аукцион с номером " + auctionModel.getAuctionNumber());
+                logger.info("с датой публикации " + auctionModel.getPublicDate());
+                logger.info("с наименованием организации " + auctionModel.getOrgName());
+                logger.info("с наименованием тендера " + auctionModel.getTenderName());
+                logger.info("с суммой " + auctionModel.getSum());
+                logger.info("с типом " + auctionModel.getTenderType());
+                logger.info("c датой начала тендера " + auctionModel.getTenderBegDate());
+                logger.info("c датой окончания тендера " + auctionModel.getTenderEndDate());
+            }
+            */
 
             Set<AuctionModel> uniqueAuctionModels = new HashSet<>(auctionModels);
             Set<AuctionModel> uniqueAuctionModelsFromDao = new HashSet<>(auctionModelsFromDao);
@@ -96,9 +112,22 @@ public class BotService {
                         &!auctionModel.getTenderName().contains("element is not attached to the page document")
                         &!auctionModel.getOrgName().contains("element is not attached to the page document")
                         &!auctionModel.getPublicDate().contains("element is not attached to the page document")
-                        &!auctionModel.getSum().contains("element is not attached to the page document")) {
+                        &!auctionModel.getSum().contains("element is not attached to the page document")
+                        ) {
                             logger.info("Загружаем в базу данных новый аукцион " + auctionModel.getAuctionNumber());
                             botAppDao.addAuction(auctionModel);
+                            /*
+                            logger.info("Загружаем в базу Oracle новый аукцион, который уже есть в Postrges");
+                            logger.info("Теперь у нас есть аукцион с номером " + auctionModel.getAuctionNumber());
+                            logger.info("с датой публикации " + auctionModel.getPublicDate());
+                            logger.info("с наименованием организации " + auctionModel.getOrgName());
+                            logger.info("с наименованием тендера " + auctionModel.getTenderName());
+                            logger.info("с суммой " + auctionModel.getSum());
+                            logger.info("с типом " + auctionModel.getTenderType());
+                            logger.info("c датой начала тендера " + auctionModel.getTenderBegDate());
+                            logger.info("c датой окончания тендера " + auctionModel.getTenderEndDate());
+                            */
+                            botAppOracleDao.addAuctionModelToOracle(botAppOracleDao.getOraTenderSequence(),auctionModel);
                         }
                     }else {
                         logger.info("Попался АУКЦИОН не по ОСАГО с номером " + auctionModel.getAuctionNumber() + ", в БД не записываем");
@@ -112,7 +141,7 @@ public class BotService {
 
         }catch (Exception e) {
             e.printStackTrace();
-            logger.error(e.toString());
+            logger.error(e.getMessage());
         }/*finally {
             closeWebDriver();
             logger.info("Закрыли окно браузера");
@@ -127,7 +156,7 @@ public class BotService {
         List<String> auctionCodes = selenideElement.findAll(byClassName("es-el-code-term")).texts();
         for(String auctionCode : auctionCodes) {
             logger.info("Дополняем коллекцию новым аукционом с номером " + auctionCode + " но остальные параметры пока null");
-            auctionModels.add(new AuctionModel(auctionCode,"null","null","null","null"));
+            auctionModels.add(new AuctionModel(auctionCode,"null","null","null","null","null","null","null"));
         }
         return auctionModels;
     }
@@ -169,6 +198,36 @@ public class BotService {
         for (int i=0;i < tenrersSums.size(); i++) {
             auctionModels.get(i).setSum(tenrersSums.get(i));
             //logger.info(tenrersSums.get(i));
+        }
+        return auctionModels;
+    }
+
+    private List<AuctionModel> getListOfTenderTypes(SelenideElement selenideElement,List<AuctionModel> auctionModels) {
+        List<String> tenderTypes = selenideElement.findAll(byClassName("es-el-type-name")).texts();
+        logger.info("По порядку с первого элемента коллекции заполняем типы тендеров");
+                for(int i=0; i < tenderTypes.size();i++) {
+                    auctionModels.get(i).setTenderType(tenderTypes.get(i));
+                    logger.info(tenderTypes.get(i));
+                }
+                return auctionModels;
+    }
+
+    private List<AuctionModel> getListOfTenderBegDates(SelenideElement selenideElement,List<AuctionModel> auctionModels) {
+        List<String> tenderBegDates = selenideElement.findAll(byCssSelector("span[content='leaf:RequestStartDate']")).texts();
+        logger.info("По порядку с первого элемента коллекции заполняем даты начала тендеров");
+        for (int i=0; i < tenderBegDates.size();i++) {
+            auctionModels.get(i).setTenderBegDate(tenderBegDates.get(i));
+            logger.info(tenderBegDates.get(i));
+        }
+        return auctionModels;
+    }
+
+    private List<AuctionModel> getListOfTenderEndDates(SelenideElement selenideElement,List<AuctionModel> auctionModels) {
+        List<String> tenderEndDates = selenideElement.findAll(byCssSelector("span[content='leaf:RequestDate']")).texts();
+        logger.info("По порядку с первого элемента коллекции заполняем даты окончания тендеров");
+        for (int i=0; i < tenderEndDates.size();i++) {
+            auctionModels.get(i).setTenderEndDate(tenderEndDates.get(i));
+            logger.info(tenderEndDates.get(i));
         }
         return auctionModels;
     }
