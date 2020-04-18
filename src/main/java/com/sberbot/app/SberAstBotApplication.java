@@ -1,6 +1,7 @@
 package com.sberbot.app;
 
 import com.codeborne.selenide.SelenideElement;
+import com.sberbot.app.config.OracleDataSourceConfig;
 import com.sberbot.app.service.BotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import org.springframework.context.annotation.FilterType;
 import java.time.LocalDateTime;
 
 //@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,value = {OracleDataSourceConfig.class})})
-@SpringBootApplication//(exclude ={FlywayAutoConfiguration.class})//(exclude = {OracleDataSourceConfig.class})
+@SpringBootApplication//(exclude ={OracleDataSourceConfig.class})//(exclude = {OracleDataSourceConfig.class})
 public class SberAstBotApplication implements CommandLineRunner {
 
 	private static final Logger logger = LoggerFactory.getLogger(SberAstBotApplication.class.getSimpleName());
