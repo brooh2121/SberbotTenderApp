@@ -17,7 +17,7 @@ public class OracleDataSourceConfig {
     private static HikariConfig config = new HikariConfig();
     private static HikariDataSource ds;
 
-    @Bean(name="OracleTend")
+    @Bean(name="oracleTend")
     public HikariDataSource getDataSourceOracle() {
         config.setDriverClassName(environment.getProperty("spring.datasource.driver-class-name1"));
         config.setJdbcUrl(environment.getProperty("spring.datasource.url1"));

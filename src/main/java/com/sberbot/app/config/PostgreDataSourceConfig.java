@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import javax.sql.DataSource;
 
 @Configuration
-public class DataSourceConfig {
+public class PostgreDataSourceConfig {
 
 
     @Autowired
@@ -21,7 +21,7 @@ public class DataSourceConfig {
     private static HikariConfig config = new HikariConfig();
     private static HikariDataSource ds;
 
-    @Bean(name = "PostgeTend")
+    @Bean(name = "postgeTend")
     public HikariDataSource getDataSourceForPostgre() {
         config.setDriverClassName(environment.getProperty("spring.pg.datasource.driver-class-name"));
         config.setJdbcUrl(environment.getProperty("spring.datasource.url"));
@@ -35,5 +35,5 @@ public class DataSourceConfig {
 
     @Bean(name = "jdbcTemplatePostgreTend")
     public JdbcTemplate getJdbcTemplatePostgreTend(){return new JdbcTemplate(getDataSourceForPostgre());}
-    
+
 }

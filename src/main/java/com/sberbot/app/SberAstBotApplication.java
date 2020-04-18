@@ -1,7 +1,6 @@
 package com.sberbot.app;
 
 import com.codeborne.selenide.SelenideElement;
-import com.sberbot.app.config.OracleDataSourceConfig;
 import com.sberbot.app.service.BotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ public class SberAstBotApplication implements CommandLineRunner {
 		for(;;) {
 			try {
 				logger.info("Запускаем бота в" + " " + LocalDateTime.now());
-				System.out.println(botService.getHelthCheckOracle());
+				logger.info("OracleDB healthCheck " + botService.getHelthCheckOracle());
 				System.out.println("Бот запущен в " + LocalDateTime.now());
 				SelenideElement selenideElement = botService.seachOption();
 				logger.info("Проверяем есть ли новые аукционы, если да - забираем");
