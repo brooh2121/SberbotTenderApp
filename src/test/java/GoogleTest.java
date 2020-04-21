@@ -1,7 +1,9 @@
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -145,5 +147,21 @@ public class GoogleTest {
         //DateTimeFormatter df = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         //LocalDateTime edt = LocalDateTime.parse(endPlanDate,df);
         //System.out.println(edt);
+    }
+
+    @Test
+    public void addMoreFilters() throws InterruptedException{
+        open("https://www.sberbank-ast.ru/purchaseList.aspx");
+        element(byId("searchInput")).setValue("страхование").pressEnter();
+        element(byXpath("//*[@id=\"filters\"]/div/table/tbody/tr[1]/td[2]/button[1]")).click();
+        element(byCssSelector("span[id=\"expandAdditionalFilters\"]")).click();
+        element(byXpath("//*[@id=\"additionalFilters\"]/tbody/tr[8]/td[2]/table/tbody/tr/td[1]/input")).click();
+        SelenideElement elem = element(byId("shortDictionaryModal"));
+        SelenideElement table = elem.find(byCssSelector("table"));
+        SelenideElement sl = (SelenideElement) table.findElements(byXpath("tbody/tr/td/input")).get(0);
+        //String elem1 = table.find(byXpath("tbody/tr[1]")).toString();
+        //String elem2 = table.find(byXpath("tbody/tr[2]")).toString();
+        //System.out.println(elem1 + " " + elem2);
+        Thread.sleep(20000);
     }
 }

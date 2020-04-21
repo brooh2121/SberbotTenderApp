@@ -8,13 +8,9 @@ import com.sberbot.app.model.AuctionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import javax.swing.text.DateFormatter;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -50,12 +46,12 @@ public class BotService {
     }
 
     public SelenideElement seachOption() {
-        element(byId("searchInput")).setValue("осаго").pressEnter();
+        element(byId("searchInput")).setValue("страхование").pressEnter();
         //element(byClassName("es-el-source-term")).shouldHave(text("Госзакупки по 44-ФЗ")).click();
         SelenideElement selenideElement = element(byId("resultTable"));
         selenideElement.shouldBe(Condition.visible);
-        SelenideElement elem = selenideElement.find(byClassName("es-el-name"));
-        elem.shouldHave(Condition.text("ОСАГО")).text().toUpperCase();
+        //SelenideElement elem = selenideElement.find(byClassName("es-el-name"));
+        //elem.shouldHave(Condition.text("ОСАГО")).text().toUpperCase();
         return selenideElement;
     }
 
@@ -71,8 +67,6 @@ public class BotService {
             ldt1 = LocalDateTime.parse(dateFromDao,df1);
             return ldt.equals(ldt1);
         } else return false;
-        //String resultString = "Дата со страницы " + ldt + " и максимальная дата из БД " + ldt1 + " " + ldt.equals(ldt1);
-        //return ldt.equals(ldt1);
     }
 
     public void getAuction (SelenideElement selenideElement) {
@@ -89,25 +83,12 @@ public class BotService {
             getListOfTenderBegDates(selenideElement,auctionModels);
             getListOfTenderEndDates(selenideElement,auctionModels);
 
-            /*
-            for(AuctionModel auctionModel : auctionModels) {
-                logger.info("Теперь у нас есть аукцион с номером " + auctionModel.getAuctionNumber());
-                logger.info("с датой публикации " + auctionModel.getPublicDate());
-                logger.info("с наименованием организации " + auctionModel.getOrgName());
-                logger.info("с наименованием тендера " + auctionModel.getTenderName());
-                logger.info("с суммой " + auctionModel.getSum());
-                logger.info("с типом " + auctionModel.getTenderType());
-                logger.info("c датой начала тендера " + auctionModel.getTenderBegDate());
-                logger.info("c датой окончания тендера " + auctionModel.getTenderEndDate());
-            }
-            */
+            //Set<AuctionModel> uniqueAuctionModels = new HashSet<>(auctionModels);
+            //Set<AuctionModel> uniqueAuctionModelsFromDao = new HashSet<>(auctionModelsFromDao);
 
-            Set<AuctionModel> uniqueAuctionModels = new HashSet<>(auctionModels);
-            Set<AuctionModel> uniqueAuctionModelsFromDao = new HashSet<>(auctionModelsFromDao);
-
-            for (AuctionModel auctionModel : uniqueAuctionModels) {
-                if(!uniqueAuctionModelsFromDao.contains(auctionModel)) {
-                    if(auctionModel.getTenderName().toUpperCase().contains("ОСАГО")) {
+            for (AuctionModel auctionModel : auctionModels) {
+                if(!auctionModelsFromDao.contains(auctionModel)) {
+                    //if(auctionModel.getTenderName().toUpperCase().contains("ОСАГО")) {
                         if(!auctionModel.getAuctionNumber().contains("element is not attached to the page document")
                         &!auctionModel.getTenderName().contains("element is not attached to the page document")
                         &!auctionModel.getOrgName().contains("element is not attached to the page document")
@@ -116,22 +97,11 @@ public class BotService {
                         ) {
                             logger.info("Загружаем в базу данных новый аукцион " + auctionModel.getAuctionNumber());
                             botAppDao.addAuction(auctionModel);
-                            /*
-                            logger.info("Загружаем в базу Oracle новый аукцион, который уже есть в Postrges");
-                            logger.info("Теперь у нас есть аукцион с номером " + auctionModel.getAuctionNumber());
-                            logger.info("с датой публикации " + auctionModel.getPublicDate());
-                            logger.info("с наименованием организации " + auctionModel.getOrgName());
-                            logger.info("с наименованием тендера " + auctionModel.getTenderName());
-                            logger.info("с суммой " + auctionModel.getSum());
-                            logger.info("с типом " + auctionModel.getTenderType());
-                            logger.info("c датой начала тендера " + auctionModel.getTenderBegDate());
-                            logger.info("c датой окончания тендера " + auctionModel.getTenderEndDate());
-                            */
                             botAppOracleDao.addAuctionModelToOracle(botAppOracleDao.getOraTenderSequence(),auctionModel);
                         }
-                    }else {
-                        logger.info("Попался АУКЦИОН не по ОСАГО с номером " + auctionModel.getAuctionNumber() + ", в БД не записываем");
-                    }
+                    //}else {
+                        //logger.info("Попался АУКЦИОН не по ОСАГО с номером " + auctionModel.getAuctionNumber() + ", в БД не записываем");
+                    //}
 
                 }else {
                    logger.info("Аукцион с номером " + auctionModel.getAuctionNumber() + " уже есть в базе данных");

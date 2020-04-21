@@ -11,10 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BotAppOracleDaoImpl implements BotAppOracleDao {
 
-    String constTenderPlace = "SBERBANK-AST";
-    String dummyUrl1 = "DUMMY_URL";
-    String dummyUrl2 = "DUMMY_URL";
-    String botName = "SberBot - Munin";
+    private String constTenderPlace = "SBERBANK-AST";
+    private String dummyUrl1 = "DUMMY_URL";
+    private String dummyUrl2 = "DUMMY_URL";
+    private String botName = "SberBot - Munin";
 
 
     @Autowired
@@ -41,7 +41,7 @@ public class BotAppOracleDaoImpl implements BotAppOracleDao {
         //LocalDateTime tenderBegDate = LocalDateTime.parse(auctionModel.getTenderBegDate(),df);
         //LocalDateTime tenderEndDate = LocalDateTime.parse(auctionModel.getTenderEndDate(),df);
         //String str = "'\"to_date('"+auctionModel.getPublicDate()+"',\"dd.mm.yyyy hh24:mi\"),\n";
-        String query = "insert into tend.tendera values ("+seq_id+",'"+auctionModel.getAuctionNumber()+"',"+sumDouble+",'"+auctionModel.getOrgName()+"', null,'"+auctionModel.getTenderName()+"','"+auctionModel.getTenderType()+"','"+constTenderPlace+"','"+dummyUrl1+"','"+dummyUrl2+"',to_date('"+auctionModel.getPublicDate()+"',\'dd.mm.yyyy hh24:mi\'),to_date('"+auctionModel.getTenderBegDate()+"',\'dd.mm.yyyy hh24:mi\'),to_date('"+auctionModel.getTenderEndDate()+"',\'dd.mm.yyyy hh24:mi\'),null,'"+botName+"',sysdate,sysdate)";
+        String query = "insert into tend.tendera (id,tender_number,tender_sum,org_name,org_inn,tender_name,tender_type,tender_place,tender_place_url,tender_gov_url,publication_date,bid_begin_date,bid_end_date,tender_end_date_plan,robot_name,robot_ins_date) values ("+seq_id+",'"+auctionModel.getAuctionNumber()+"',"+sumDouble+",'"+auctionModel.getOrgName()+"', null,'"+auctionModel.getTenderName()+"','"+auctionModel.getTenderType()+"','"+constTenderPlace+"','"+dummyUrl1+"','"+dummyUrl2+"',to_date('"+auctionModel.getPublicDate()+"',\'dd.mm.yyyy hh24:mi\'),to_date('"+auctionModel.getTenderBegDate()+"',\'dd.mm.yyyy hh24:mi\'),to_date('"+auctionModel.getTenderEndDate()+"',\'dd.mm.yyyy hh24:mi\'),null,'"+botName+"',sysdate)";
         jdbcTemplateOracleTend.update(query);
     }
 

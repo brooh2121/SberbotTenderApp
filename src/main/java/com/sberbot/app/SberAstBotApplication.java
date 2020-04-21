@@ -12,6 +12,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.core.env.Environment;
+import static com.codeborne.selenide.Selenide.*;
 
 import java.time.LocalDateTime;
 
@@ -21,8 +23,13 @@ public class SberAstBotApplication implements CommandLineRunner {
 
 	private static final Logger logger = LoggerFactory.getLogger(SberAstBotApplication.class.getSimpleName());
 
+	private int counter = 0;
+
 	@Autowired
     BotService botService;
+
+	@Autowired
+	Environment environment;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SberAstBotApplication.class, args);
@@ -34,6 +41,13 @@ public class SberAstBotApplication implements CommandLineRunner {
 		botService.enterSberAuction();
 		for(;;) {
 			try {
+
+				if(counter == Integer.parseInt(environment.getProperty("bot.browser.reloadingInterval"))) {
+					logger.info("Вызываем обнуление счетчика и перезагрузку браузера");
+					counter = callBrowserReload(counter);
+				}
+				counter++;
+				logger.info("счетчик пезагрузки браузера равен :" + counter);
 				logger.info("Запускаем бота в" + " " + LocalDateTime.now());
 				logger.info("OracleDB healthCheck " + botService.getHelthCheckOracle());
 				System.out.println("Бот запущен в " + LocalDateTime.now());
@@ -45,11 +59,16 @@ public class SberAstBotApplication implements CommandLineRunner {
 					botService.getAuction(selenideElement);
 				}
 				System.out.println("Бот остановлен в " + LocalDateTime.now());
-				Thread.sleep(60*1000);
+				Thread.sleep(Long.parseLong(environment.getProperty("bot.sleeping.interval")));
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
+	}
 
+	public int callBrowserReload(int counter) {
+		closeWebDriver();
+		botService.enterSberAuction();
+		return counter = 0;
 	}
 }
