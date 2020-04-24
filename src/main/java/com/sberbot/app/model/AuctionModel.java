@@ -11,11 +11,12 @@ public class AuctionModel {
     private String tenderBegDate;
     private String tenderEndDate;
     private String sum;
+    private String tenderStatus;
 
     public AuctionModel() {
     }
 
-    public AuctionModel(String auctionNumber, String orgName, String tenderName, String tenderType, String publicDate, String tenderBegDate, String tenderEndDate, String sum) {
+    public AuctionModel(String auctionNumber, String orgName, String tenderName, String tenderType, String publicDate, String tenderBegDate, String tenderEndDate, String sum, String tenderStatus) {
         this.auctionNumber = auctionNumber;
         this.orgName = orgName;
         this.tenderName = tenderName;
@@ -24,6 +25,7 @@ public class AuctionModel {
         this.tenderBegDate = tenderBegDate;
         this.tenderEndDate = tenderEndDate;
         this.sum = sum;
+        this.tenderStatus = tenderStatus;
     }
 
     public String getAuctionNumber() {
@@ -90,6 +92,14 @@ public class AuctionModel {
         this.sum = sum;
     }
 
+    public String getTenderStatus() {
+        return tenderStatus;
+    }
+
+    public void setTenderStatus(String tenderStatus) {
+        this.tenderStatus = tenderStatus;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,11 +109,12 @@ public class AuctionModel {
                 orgName.equals(that.orgName) &&
                 tenderName.equals(that.tenderName) &&
                 publicDate.equals(that.publicDate) &&
-                sum.equals(that.sum);
+                sum.equals(that.sum) &&
+                tenderStatus.equals(that.tenderStatus);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(auctionNumber, orgName, tenderName, publicDate, sum);
+        return Objects.hash(auctionNumber, orgName, tenderName, publicDate, sum, tenderStatus);
     }
 }

@@ -1,9 +1,18 @@
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
+import org.junit.After;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,14 +24,23 @@ import static com.codeborne.selenide.WebDriverRunner.*;
 
 public class GoogleTest {
 
-    @Test
-    void DummiTest() {
-        String str = "<span>Сбербанк-АСТ</span>";
-        System.out.println(str);
+    @Autowired
+    Environment environment;
+
+    @BeforeAll
+   static void setBrowserDriver() {
+        System.setProperty("webdriver.chrome.driver", "C:\\App\\chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+        WebDriverRunner.setWebDriver(driver);
+    }
+
+    @AfterAll
+    static void closeBrowserDriver() {
+        WebDriverRunner.closeWebDriver();
     }
 
     @Test
-    void GoogleSearch() {
+    void GoogleSearch() throws Exception {
         open("https://www.google.ru/?gws_rd=cr");
         element(byName("q")).setValue("сбербанк аст").pressEnter();
         SelenideElement selenideElement  = element(byText("Сбербанк-АСТ"));
@@ -30,7 +48,7 @@ public class GoogleTest {
     }
 
     @Test
-    void SberSearch() {
+    void SberSearch() throws Exception{
         open("https://www.sberbank-ast.ru/purchaseList.aspx");
         element(byId("searchInput")).setValue("Электронный аукцион осаго").pressEnter();
 
@@ -163,5 +181,39 @@ public class GoogleTest {
         //String elem2 = table.find(byXpath("tbody/tr[2]")).toString();
         //System.out.println(elem1 + " " + elem2);
         Thread.sleep(20000);
+    }
+
+    @Test
+    public void getTenderStatus () {
+        open("https://www.sberbank-ast.ru/purchaseList.aspx");
+        element(byId("searchInput")).setValue("осаго").pressEnter();
+        SelenideElement selenideElement = element(byId("resultTable"));
+        selenideElement.shouldBe(Condition.visible);
+        String tenderStatus = selenideElement.find(byCssSelector("div.es-el-state-name.PurchStateName")).text();
+        System.out.println(tenderStatus);
+        //content="leaf:purchStateName
+    }
+
+    @Test
+    public void getTenderStatusCollection() throws InterruptedException{
+        open("https://www.sberbank-ast.ru/purchaseList.aspx");
+        executeJavaScript("select = document.getElementById('headerPagerSelect');\n" +
+                "var opt = document.createElement('option');\n" +
+                "opt.value = 5;\n" +
+                "opt.innerHTML = 5;\n" +
+                "select.appendChild(opt);");
+        element(byId("headerPagerSelect")).selectOptionByValue("5");
+        //element(byId("headerPagerSelect")).waitUntil(Condition.selectedText("5"),500);
+        element(byId("searchInput")).setValue("осаго").pressEnter();
+        SelenideElement selenideElement = element(byId("resultTable"));
+        //selenideElement.shouldBe(Condition.visible);
+        List<String> statuses = selenideElement.findAll(byCssSelector("div.es-el-state-name.PurchStateName")).texts();
+        System.out.println(statuses.size());
+        /*
+        for (String status : statuses) {
+            System.out.println(status);
+        }
+         */
+        Thread.sleep(10000);
     }
 }

@@ -21,12 +21,15 @@ public class BotAppDaoImpl implements BotAppDao {
 
     @Override
     public AuctionModel addAuction(AuctionModel auctionModel) {
-        String query="insert into public.auctions values(\n" +
+        String query="insert into public.auctions " +
+                "(auction_number,organization_name,tender_name,publication_date,auction_sum,tender_status)\n" +
+                "values(\n" +
                 "'"+auctionModel.getAuctionNumber()+"',\n" +
                 "'"+auctionModel.getOrgName()+"',\n" +
                 "'"+auctionModel.getTenderName()+"',\n" +
                 "'"+auctionModel.getPublicDate()+"',\n" +
-                "'"+auctionModel.getSum()+"'\n" +
+                "'"+auctionModel.getSum()+"',\n" +
+                "'"+auctionModel.getTenderStatus()+"'\n" +
                  ")";
         jdbcTemplatePostgreTend.update(query);
         return auctionModel;

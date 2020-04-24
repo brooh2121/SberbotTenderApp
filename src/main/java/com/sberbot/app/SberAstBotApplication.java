@@ -1,15 +1,18 @@
 package com.sberbot.app;
 
 import com.codeborne.selenide.SelenideElement;
+import com.sberbot.app.config.FlywayOracleConfiguration;
 import com.sberbot.app.config.OracleDataSourceConfig;
+import com.sberbot.app.dao.BotAppOracleDao;
+import com.sberbot.app.dao.impl.BotAppOracleDaoImpl;
 import com.sberbot.app.service.BotService;
+import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.env.Environment;
@@ -17,7 +20,7 @@ import static com.codeborne.selenide.Selenide.*;
 
 import java.time.LocalDateTime;
 
-//@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,value = {OracleDataSourceConfig.class})})
+//@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,value = {OracleDataSourceConfig.class, BotAppOracleDao.class, FlywayOracleConfiguration.class, BotAppOracleDaoImpl.class})})
 @SpringBootApplication//(exclude ={OracleDataSourceConfig.class})//(exclude = {OracleDataSourceConfig.class})
 public class SberAstBotApplication implements CommandLineRunner {
 
@@ -37,8 +40,9 @@ public class SberAstBotApplication implements CommandLineRunner {
 	}
 
 	@Override
-	public void run(String... args) {
+	public void run(String... args) throws InterruptedException{
 		botService.enterSberAuction();
+		Thread.sleep(500);
 		for(;;) {
 			try {
 

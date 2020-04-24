@@ -31,4 +31,5 @@ public class OracleDataSourceConfig {
 
     @Bean(name = "jdbcTemplateOracleTend")
     public JdbcTemplate getJdbcTemplateOracleTend() {return new JdbcTemplate(getDataSourceOracle());}
+
 }

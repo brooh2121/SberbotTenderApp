@@ -16,6 +16,7 @@ public class AuctionsMapper implements RowMapper {
         auctionModel.setTenderName(rs.getString(3));
         auctionModel.setPublicDate(rs.getString(4));
         auctionModel.setSum(rs.getString(5));
+        auctionModel.setTenderStatus(rs.getString(7));
         return auctionModel;
     }
 }
