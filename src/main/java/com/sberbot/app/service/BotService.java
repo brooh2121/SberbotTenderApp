@@ -27,7 +27,7 @@ public class BotService {
     @Autowired
     BotAppDao botAppDao;
 
-    @Autowired(required = false)
+    @Autowired
     BotAppOracleDao botAppOracleDao;
 
     @Autowired

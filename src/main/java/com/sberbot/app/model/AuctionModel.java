@@ -109,12 +109,11 @@ public class AuctionModel {
                 orgName.equals(that.orgName) &&
                 tenderName.equals(that.tenderName) &&
                 publicDate.equals(that.publicDate) &&
-                sum.equals(that.sum) &&
-                tenderStatus.equals(that.tenderStatus);
+                sum.equals(that.sum);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(auctionNumber, orgName, tenderName, publicDate, sum, tenderStatus);
+        return Objects.hash(auctionNumber, orgName, tenderName, publicDate, sum);
     }
 }

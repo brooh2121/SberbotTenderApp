@@ -29,6 +29,6 @@ public class FlywayPostgresConfiguration {
 
     @Bean
     int migratePostgres(Flyway flyway) {
-        return flyway.migrate();
+        return flywayPostgres(postgeTend).migrate();
     }
 }

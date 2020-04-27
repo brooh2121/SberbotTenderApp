@@ -20,6 +20,7 @@ import static com.codeborne.selenide.Selenide.*;
 
 import java.time.LocalDateTime;
 
+@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {FlywayOracleConfiguration.class})})
 //@ComponentScan(excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,value = {OracleDataSourceConfig.class, BotAppOracleDao.class, FlywayOracleConfiguration.class, BotAppOracleDaoImpl.class})})
 @SpringBootApplication//(exclude ={OracleDataSourceConfig.class})//(exclude = {OracleDataSourceConfig.class})
 public class SberAstBotApplication implements CommandLineRunner {
