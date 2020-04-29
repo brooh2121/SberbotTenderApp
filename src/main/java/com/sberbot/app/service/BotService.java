@@ -1,6 +1,7 @@
 package com.sberbot.app.service;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.SelenideElement;
 import com.sberbot.app.dao.BotAppDao;
 import com.sberbot.app.dao.BotAppOracleDao;
@@ -37,6 +38,7 @@ public class BotService {
         try {
             System.setProperty("webdriver.chrome.driver", environment.getProperty("webdriver.path"));
             System.setProperty("selenide.browser", "Chrome");
+            Configuration.reopenBrowserOnFail = true;
             logger.info("Переходим на сайт сбербанк-аст");
             open("https://www.sberbank-ast.ru/purchaseList.aspx");
             executeJavaScript("select = document.getElementById('headerPagerSelect');\n" +
@@ -100,6 +102,14 @@ public class BotService {
                         & !auctionModel.getTenderBegDate().contains("element is not attached to the page document")
                         & !auctionModel.getTenderEndDate().contains("element is not attached to the page document")
                         & !auctionModel.getTenderStatus().contains("element is not attached to the page document")
+                        & !auctionModel.getTenderName().equals("null")
+                        & !auctionModel.getOrgName().equals("null")
+                        & !auctionModel.getPublicDate().equals("null")
+                        & !auctionModel.getSum().equals("null")
+                        & !auctionModel.getTenderType().equals("null")
+                        & !auctionModel.getTenderBegDate().equals("null")
+                        & !auctionModel.getTenderEndDate().equals("null")
+                        & !auctionModel.getTenderStatus().equals("null")
                 ) {
                     if (!auctionModelsFromDao.contains(auctionModel)) {
                         logger.info("Загружаем в базу данных новый аукцион "
@@ -113,8 +123,10 @@ public class BotService {
                                 + auctionModel.getTenderEndDate() + " "
                                 + auctionModel.getTenderStatus()
                         );
+
                         botAppDao.addAuction(auctionModel);
                         botAppOracleDao.addAuctionModelToOracle(botAppOracleDao.getOraTenderSequence(), auctionModel);
+                        
                     } else {
                         logger.info("Аукцион с номером " + auctionModel.getAuctionNumber() + " уже есть в базе данных");
                     }
