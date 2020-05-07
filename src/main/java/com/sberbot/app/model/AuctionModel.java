@@ -116,4 +116,19 @@ public class AuctionModel {
     public int hashCode() {
         return Objects.hash(auctionNumber, orgName, tenderName, publicDate, sum);
     }
+
+    @Override
+    public String toString() {
+        return "AuctionModel{" +
+                "auctionNumber='" + auctionNumber + '\'' +
+                ", orgName='" + orgName + '\'' +
+                ", tenderName='" + tenderName + '\'' +
+                ", tenderType='" + tenderType + '\'' +
+                ", publicDate='" + publicDate + '\'' +
+                ", tenderBegDate='" + tenderBegDate + '\'' +
+                ", tenderEndDate='" + tenderEndDate + '\'' +
+                ", sum='" + sum + '\'' +
+                ", tenderStatus='" + tenderStatus + '\'' +
+                '}';
+    }
 }

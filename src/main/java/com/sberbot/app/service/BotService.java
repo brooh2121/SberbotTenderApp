@@ -47,6 +47,14 @@ public class BotService {
                     "opt.innerHTML = 5;\n" +
                     "select.appendChild(opt);");
             element(byId("headerPagerSelect")).selectOptionByValue("5");
+
+            element(byXpath("//*[@id=\"filters\"]/div/table/tbody/tr[1]/td[2]/button[1]")).shouldBe(Condition.visible).click(); // фильтры добавить изменить
+            element(byXpath("//*[@id=\"expandAdditionalFilters\"]")).shouldBe(Condition.visible).click(); // еще фильтры
+            element(byXpath("//*[@id=\"additionalFilters\"]/tbody/tr[8]/td[2]/table/tbody/tr/td[1]/input")).shouldBe(Condition.visible).click(); // отрасль
+            element(byXpath("/html/body/form/div[7]/div/div/div[13]/div/div/div[2]/div/table/tbody/tr[20]/td[1]/input")).click(); // услуги в непроизводественной сфере
+            element(byXpath("//*[@id=\"shortDictionaryModal\"]/div/div/div[3]/input")).click(); // выбрать
+            element(byId("searchInput")).setValue("страхование").pressEnter(); // фильтр по значению в поле ввода
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,6 +120,8 @@ public class BotService {
                         & !auctionModel.getTenderStatus().equals("null")
                 ) {
                     if (!auctionModelsFromDao.contains(auctionModel)) {
+                        logger.info(auctionModelsFromDao.toString());
+                        logger.info(auctionModel.toString());
                         logger.info("Загружаем в базу данных новый аукцион "
                                 + auctionModel.getAuctionNumber() + " "
                                 + auctionModel.getTenderName() + " "
@@ -126,7 +136,7 @@ public class BotService {
 
                         botAppDao.addAuction(auctionModel);
                         botAppOracleDao.addAuctionModelToOracle(botAppOracleDao.getOraTenderSequence(), auctionModel);
-                        
+
                     } else {
                         logger.info("Аукцион с номером " + auctionModel.getAuctionNumber() + " уже есть в базе данных");
                     }
