@@ -8,7 +8,9 @@ import com.sberbot.app.dao.BotAppOracleDao;
 import com.sberbot.app.dao.impl.BotAppOracleDaoImpl;
 import com.sberbot.app.service.BotService;
 import org.flywaydb.core.Flyway;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.UnhandledAlertException;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,7 @@ public class SberAstBotApplication implements CommandLineRunner {
 				try{
 					selenideElement = botService.seachOption();
 				}catch (UnhandledAlertException e) {
-					confirm();
+					switchTo().alert().accept();
 					selenideElement = null;
 				}
 				if(selenideElement!=null) {
