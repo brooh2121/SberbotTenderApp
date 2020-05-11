@@ -6,6 +6,9 @@ import com.codeborne.selenide.SelenideElement;
 import com.sberbot.app.dao.BotAppDao;
 import com.sberbot.app.dao.BotAppOracleDao;
 import com.sberbot.app.model.AuctionModel;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.remote.CapabilityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.rmi.UnexpectedException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -39,6 +43,7 @@ public class BotService {
             System.setProperty("webdriver.chrome.driver", environment.getProperty("webdriver.path"));
             System.setProperty("selenide.browser", "Chrome");
             Configuration.reopenBrowserOnFail = true;
+            Configuration.browserCapabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
             logger.info("Переходим на сайт сбербанк-аст");
             open("https://www.sberbank-ast.ru/purchaseList.aspx");
             executeJavaScript("select = document.getElementById('headerPagerSelect');\n" +
@@ -61,11 +66,12 @@ public class BotService {
 
     }
 
-    public SelenideElement seachOption() throws  Exception{
-        element(byId("searchInput")).setValue("страхование").pressEnter();
-        SelenideElement selenideElement = element(byId("resultTable"));
-        selenideElement.shouldBe(Condition.visible);
-        return selenideElement;
+    public SelenideElement seachOption(){
+            element(byId("searchInput")).setValue("страхование").pressEnter();
+            SelenideElement selenideElement = element(byId("resultTable"));
+            selenideElement.shouldBe(Condition.visible);
+            return selenideElement;
+
     }
 
     public Boolean checkMaxAuctionPublicDate(SelenideElement selenideElement) throws Exception {

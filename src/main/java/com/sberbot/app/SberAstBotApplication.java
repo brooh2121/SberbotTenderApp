@@ -1,5 +1,6 @@
 package com.sberbot.app;
 
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.sberbot.app.config.FlywayOracleConfiguration;
 import com.sberbot.app.config.OracleDataSourceConfig;
@@ -7,6 +8,7 @@ import com.sberbot.app.dao.BotAppOracleDao;
 import com.sberbot.app.dao.impl.BotAppOracleDaoImpl;
 import com.sberbot.app.service.BotService;
 import org.flywaydb.core.Flyway;
+import org.openqa.selenium.UnhandledAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,15 +58,24 @@ public class SberAstBotApplication implements CommandLineRunner {
 				logger.info("Запускаем бота в" + " " + LocalDateTime.now());
 				logger.info("OracleDB healthCheck " + botService.getHelthCheckOracle());
 				System.out.println("Бот запущен в " + LocalDateTime.now());
-				SelenideElement selenideElement = botService.seachOption();
-				logger.info("Проверяем есть ли новые аукционы, если да - забираем");
-				if(botService.checkMaxAuctionPublicDate(selenideElement)) {
-					logger.info("Новых аукционов пока что нет - готовимся к спячке");
-				}else {
-					botService.getAuction(selenideElement);
+				SelenideElement selenideElement;
+				try{
+					selenideElement = botService.seachOption();
+				}catch (UnhandledAlertException e) {
+					confirm();
+					selenideElement = null;
 				}
-				System.out.println("Бот остановлен в " + LocalDateTime.now());
-				Thread.sleep(Long.parseLong(environment.getProperty("bot.sleeping.interval")));
+				if(selenideElement!=null) {
+					logger.info("Проверяем есть ли новые аукционы, если да - забираем");
+					if(botService.checkMaxAuctionPublicDate(selenideElement)) {
+						logger.info("Новых аукционов пока что нет - готовимся к спячке");
+					}else {
+						botService.getAuction(selenideElement);
+					}
+					System.out.println("Бот остановлен в " + LocalDateTime.now());
+					Thread.sleep(Long.parseLong(environment.getProperty("bot.sleeping.interval")));
+				}
+				logger.info("не удалось получить таблицу с тендерами, попробуем повторить в следующей итерации");
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
