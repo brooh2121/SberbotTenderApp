@@ -14,7 +14,7 @@ public class BotAppOracleDaoImpl implements BotAppOracleDao {
     private String constTenderPlace = "SBERBANK-AST";
     private String dummyUrl1 = "DUMMY_URL";
     private String dummyUrl2 = "DUMMY_URL";
-    private String botName = "SberBot - Munin";
+    private String botName = "RobotA";
 
 
     @Autowired

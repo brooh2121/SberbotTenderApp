@@ -1,0 +1,1 @@
+create sequence if not exists send_doc_id_seq start 1;
