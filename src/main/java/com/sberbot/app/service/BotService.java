@@ -3,6 +3,7 @@ package com.sberbot.app.service;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.ex.ElementNotFound;
 import com.sberbot.app.dao.BotAppDao;
 import com.sberbot.app.dao.BotAppOracleDao;
 import com.sberbot.app.model.AuctionModel;
@@ -62,8 +63,10 @@ public class BotService {
             element(byXpath("//*[@id=\"shortDictionaryModal\"]/div/div/div[3]/input")).click(); // выбрать
             element(byId("searchInput")).setValue("страхование").pressEnter(); // фильтр по значению в поле ввода
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ElementNotFound e) {
+            logger.error(e.getMessage());
+            closeWebDriver();
+            enterSberAuction();
         }
 
     }
